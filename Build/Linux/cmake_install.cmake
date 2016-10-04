@@ -1,4 +1,4 @@
-# Install script for directory: /home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/Build/Linux
+# Install script for directory: /home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/Build
 
 # Set the install prefix
 IF(NOT DEFINED CMAKE_INSTALL_PREFIX)

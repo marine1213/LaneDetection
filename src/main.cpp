@@ -14,8 +14,10 @@ int main(int argc, char** args){
 		if(!(ent = readdir (dir)))
 			break;
 		img = readImage(ent->d_name);
+#if SHOW_INPUT
 		if(!img.empty()) // check if file is directory or not image
 			imshow(ent->d_name, img);
+#endif //SHOW_INPUT
 #elif VIDEO || CAMERA
 		img = readImage(capture);
 		if(img.empty())

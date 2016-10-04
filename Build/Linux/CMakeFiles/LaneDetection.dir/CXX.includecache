@@ -16,6 +16,10 @@ opencv2/imgproc.hpp
 iostream
 -
 
+/home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/img_processing.cpp
+img_processing.h
+/home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/img_processing.h
+
 /home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/img_processing.h
 common.h
 /home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/common.h
@@ -33,6 +37,10 @@ common.h
 /home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/common.h
 dirent.h
 /home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/dirent.h
+
+/home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/my_tools.cpp
+my_tools.h
+/home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/my_tools.h
 
 /home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/my_tools.h
 common.h

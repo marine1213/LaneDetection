@@ -58,7 +58,7 @@ vector<Vec4i> lineDetection(Mat &src, string name){
 
 	morphologyEx(src,morphSrc,MORPH_CLOSE, element);
 	MorphologicalThinning(morphSrc,cannyMorpSrc);
-	imshow("thin img"+name, cannyMorpSrc);
+//	imshow("thin img"+name, cannyMorpSrc);
 	Canny(cannyMorpSrc,cannyMorpSrc,50,200,3);
 
 	Mat houghLines = Mat(cannyMorpSrc);

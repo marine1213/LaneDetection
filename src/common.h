@@ -24,6 +24,6 @@ using namespace std;
 #define COLS					860
 #define ROWS					540
 
-
+#define SHOW_INPUT				0
 
 #endif //_COMMON_H_
