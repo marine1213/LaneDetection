@@ -21,7 +21,7 @@ using namespace std;
 #define DATASET_DIR					"../../../Dataset/RoadSamples/"
 
 // Image size
-#define COLS					860
+#define COLS					430
 #define ROWS					540
 
 #define SHOW_INPUT				0

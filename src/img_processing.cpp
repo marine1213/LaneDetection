@@ -10,12 +10,12 @@ vector<Vec4i> lineDetection(Mat &src, string name);
 
 Mat imgProcessing (Mat &input){
 
-	Mat cleanedInput = Mat(input);
-	int newRow = input.rows * 1.0/5;
-	//rectangle(input,Point(0,0),Point(input.cols - 1, newRow), Scalar(0,0,0),CV_FILLED);
+	Mat cleanedInput = input.clone();
+	int newRow = input.rows * 1.0/3;
+	rectangle(cleanedInput,Point(0,0),Point(input.cols - 1, newRow), Scalar(0,0,0),CV_FILLED);
 
 	Mat hlsImg;
-	cvtColor(input,hlsImg,CV_BGR2HLS);
+	cvtColor(cleanedInput,hlsImg,CV_BGR2HLS);
 
 	vector<Mat> hlsChannels(3);
 	split(hlsImg,hlsChannels);
@@ -39,15 +39,15 @@ Mat imgProcessing (Mat &input){
 	for( size_t i = 0; i < whiteLines.size(); i++ )
 	{
 	  Vec4i l = whiteLines[i];
-	  line( cleanedInput, Point(l[0], l[1]), Point(l[2], l[3]), Scalar(0,255,0), 3, CV_AA);
+	  line( input, Point(l[0], l[1]), Point(l[2], l[3]), Scalar(0,255,0), 3, CV_AA);
 	}
 	for( size_t i = 0; i < yellowLines.size(); i++ )
 	{
 	  Vec4i l = yellowLines[i];
-	  line( cleanedInput, Point(l[0], l[1]), Point(l[2], l[3]), Scalar(255,0,0), 3, CV_AA);
+	  line( input, Point(l[0], l[1]), Point(l[2], l[3]), Scalar(255,0,0), 3, CV_AA);
 	}
 
-	return cleanedInput;
+	return input;
 }
 
 vector<Vec4i> lineDetection(Mat &src, string name){
@@ -99,7 +99,6 @@ void MorphologicalThinning(Mat &pSrc, Mat &pDst) {
         	p_enlarged_src.at<float>(0, j) = 0.0f;
         	p_enlarged_src.at<float>(rows+1, j) = 0.0f;
         }
-        cout << pSrc.type()<< endl;
         for(int i = 0; i < rows; i++) {
                 for(int j = 0; j < cols; j++) {
                         if (pSrc.at<char>(i, j) != 0) {

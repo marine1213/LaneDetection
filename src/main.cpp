@@ -20,9 +20,11 @@ int main(int argc, char** args){
 #endif //SHOW_INPUT
 #elif VIDEO || CAMERA
 		img = readImage(capture);
+#if SHOW_INPUT
 		if(img.empty())
 			break;
 		imshow("Preview", img);
+#endif //SHOW_INPUT
 #endif
 		if(!img.empty()){
 			Mat output = imgProcessing(img);

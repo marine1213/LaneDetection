@@ -61,8 +61,8 @@ Mat readImage(VideoCapture &cap)
 	if(input.empty())
 		perror("");
 	else{
-		//int newRows = input.rows*input.cols*1.0/COLS;
-		resize(input, input, Size(input.cols/2,input.rows/2));
+		int newRows = COLS/(input.cols*1.0/input.rows);
+		resize(input, input, Size(COLS,newRows));
 	}
 	return input;
 }
