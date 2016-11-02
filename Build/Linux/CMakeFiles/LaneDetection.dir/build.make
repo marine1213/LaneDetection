@@ -72,9 +72,55 @@ CMakeFiles/LaneDetection.dir/home/gnouchnam/opncvws/OpencvWorkspace/LaneDetectio
 
 CMakeFiles/LaneDetection.dir/home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/main.cpp.o.provides.build: CMakeFiles/LaneDetection.dir/home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/main.cpp.o
 
+CMakeFiles/LaneDetection.dir/home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/CarCtrl.cpp.o: CMakeFiles/LaneDetection.dir/flags.make
+CMakeFiles/LaneDetection.dir/home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/CarCtrl.cpp.o: /home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/CarCtrl.cpp
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/Build/Linux/CMakeFiles $(CMAKE_PROGRESS_2)
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Building CXX object CMakeFiles/LaneDetection.dir/home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/CarCtrl.cpp.o"
+	/usr/bin/c++   $(CXX_DEFINES) $(CXX_FLAGS) -o CMakeFiles/LaneDetection.dir/home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/CarCtrl.cpp.o -c /home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/CarCtrl.cpp
+
+CMakeFiles/LaneDetection.dir/home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/CarCtrl.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/LaneDetection.dir/home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/CarCtrl.cpp.i"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -E /home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/CarCtrl.cpp > CMakeFiles/LaneDetection.dir/home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/CarCtrl.cpp.i
+
+CMakeFiles/LaneDetection.dir/home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/CarCtrl.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/LaneDetection.dir/home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/CarCtrl.cpp.s"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -S /home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/CarCtrl.cpp -o CMakeFiles/LaneDetection.dir/home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/CarCtrl.cpp.s
+
+CMakeFiles/LaneDetection.dir/home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/CarCtrl.cpp.o.requires:
+.PHONY : CMakeFiles/LaneDetection.dir/home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/CarCtrl.cpp.o.requires
+
+CMakeFiles/LaneDetection.dir/home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/CarCtrl.cpp.o.provides: CMakeFiles/LaneDetection.dir/home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/CarCtrl.cpp.o.requires
+	$(MAKE) -f CMakeFiles/LaneDetection.dir/build.make CMakeFiles/LaneDetection.dir/home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/CarCtrl.cpp.o.provides.build
+.PHONY : CMakeFiles/LaneDetection.dir/home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/CarCtrl.cpp.o.provides
+
+CMakeFiles/LaneDetection.dir/home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/CarCtrl.cpp.o.provides.build: CMakeFiles/LaneDetection.dir/home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/CarCtrl.cpp.o
+
+CMakeFiles/LaneDetection.dir/home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/draw_helper.cpp.o: CMakeFiles/LaneDetection.dir/flags.make
+CMakeFiles/LaneDetection.dir/home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/draw_helper.cpp.o: /home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/draw_helper.cpp
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/Build/Linux/CMakeFiles $(CMAKE_PROGRESS_3)
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Building CXX object CMakeFiles/LaneDetection.dir/home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/draw_helper.cpp.o"
+	/usr/bin/c++   $(CXX_DEFINES) $(CXX_FLAGS) -o CMakeFiles/LaneDetection.dir/home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/draw_helper.cpp.o -c /home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/draw_helper.cpp
+
+CMakeFiles/LaneDetection.dir/home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/draw_helper.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/LaneDetection.dir/home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/draw_helper.cpp.i"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -E /home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/draw_helper.cpp > CMakeFiles/LaneDetection.dir/home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/draw_helper.cpp.i
+
+CMakeFiles/LaneDetection.dir/home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/draw_helper.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/LaneDetection.dir/home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/draw_helper.cpp.s"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -S /home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/draw_helper.cpp -o CMakeFiles/LaneDetection.dir/home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/draw_helper.cpp.s
+
+CMakeFiles/LaneDetection.dir/home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/draw_helper.cpp.o.requires:
+.PHONY : CMakeFiles/LaneDetection.dir/home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/draw_helper.cpp.o.requires
+
+CMakeFiles/LaneDetection.dir/home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/draw_helper.cpp.o.provides: CMakeFiles/LaneDetection.dir/home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/draw_helper.cpp.o.requires
+	$(MAKE) -f CMakeFiles/LaneDetection.dir/build.make CMakeFiles/LaneDetection.dir/home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/draw_helper.cpp.o.provides.build
+.PHONY : CMakeFiles/LaneDetection.dir/home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/draw_helper.cpp.o.provides
+
+CMakeFiles/LaneDetection.dir/home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/draw_helper.cpp.o.provides.build: CMakeFiles/LaneDetection.dir/home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/draw_helper.cpp.o
+
 CMakeFiles/LaneDetection.dir/home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/img_processing.cpp.o: CMakeFiles/LaneDetection.dir/flags.make
 CMakeFiles/LaneDetection.dir/home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/img_processing.cpp.o: /home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/img_processing.cpp
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/Build/Linux/CMakeFiles $(CMAKE_PROGRESS_2)
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/Build/Linux/CMakeFiles $(CMAKE_PROGRESS_4)
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Building CXX object CMakeFiles/LaneDetection.dir/home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/img_processing.cpp.o"
 	/usr/bin/c++   $(CXX_DEFINES) $(CXX_FLAGS) -o CMakeFiles/LaneDetection.dir/home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/img_processing.cpp.o -c /home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/img_processing.cpp
 
@@ -97,7 +143,7 @@ CMakeFiles/LaneDetection.dir/home/gnouchnam/opncvws/OpencvWorkspace/LaneDetectio
 
 CMakeFiles/LaneDetection.dir/home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/my_tools.cpp.o: CMakeFiles/LaneDetection.dir/flags.make
 CMakeFiles/LaneDetection.dir/home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/my_tools.cpp.o: /home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/my_tools.cpp
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/Build/Linux/CMakeFiles $(CMAKE_PROGRESS_3)
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/Build/Linux/CMakeFiles $(CMAKE_PROGRESS_5)
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Building CXX object CMakeFiles/LaneDetection.dir/home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/my_tools.cpp.o"
 	/usr/bin/c++   $(CXX_DEFINES) $(CXX_FLAGS) -o CMakeFiles/LaneDetection.dir/home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/my_tools.cpp.o -c /home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/my_tools.cpp
 
@@ -121,6 +167,8 @@ CMakeFiles/LaneDetection.dir/home/gnouchnam/opncvws/OpencvWorkspace/LaneDetectio
 # Object files for target LaneDetection
 LaneDetection_OBJECTS = \
 "CMakeFiles/LaneDetection.dir/home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/main.cpp.o" \
+"CMakeFiles/LaneDetection.dir/home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/CarCtrl.cpp.o" \
+"CMakeFiles/LaneDetection.dir/home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/draw_helper.cpp.o" \
 "CMakeFiles/LaneDetection.dir/home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/img_processing.cpp.o" \
 "CMakeFiles/LaneDetection.dir/home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/my_tools.cpp.o"
 
@@ -128,6 +176,8 @@ LaneDetection_OBJECTS = \
 LaneDetection_EXTERNAL_OBJECTS =
 
 LaneDetection: CMakeFiles/LaneDetection.dir/home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/main.cpp.o
+LaneDetection: CMakeFiles/LaneDetection.dir/home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/CarCtrl.cpp.o
+LaneDetection: CMakeFiles/LaneDetection.dir/home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/draw_helper.cpp.o
 LaneDetection: CMakeFiles/LaneDetection.dir/home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/img_processing.cpp.o
 LaneDetection: CMakeFiles/LaneDetection.dir/home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/my_tools.cpp.o
 LaneDetection: CMakeFiles/LaneDetection.dir/build.make
@@ -168,6 +218,8 @@ CMakeFiles/LaneDetection.dir/build: LaneDetection
 .PHONY : CMakeFiles/LaneDetection.dir/build
 
 CMakeFiles/LaneDetection.dir/requires: CMakeFiles/LaneDetection.dir/home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/main.cpp.o.requires
+CMakeFiles/LaneDetection.dir/requires: CMakeFiles/LaneDetection.dir/home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/CarCtrl.cpp.o.requires
+CMakeFiles/LaneDetection.dir/requires: CMakeFiles/LaneDetection.dir/home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/draw_helper.cpp.o.requires
 CMakeFiles/LaneDetection.dir/requires: CMakeFiles/LaneDetection.dir/home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/img_processing.cpp.o.requires
 CMakeFiles/LaneDetection.dir/requires: CMakeFiles/LaneDetection.dir/home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/my_tools.cpp.o.requires
 .PHONY : CMakeFiles/LaneDetection.dir/requires

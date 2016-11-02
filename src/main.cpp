@@ -1,38 +1,20 @@
 #include "main.h"
-#include "img_processing.h"
 
-int main(int argc, char** args){
-
-	// assertions
-	assert((VIDEO + CAMERA + STATIC_IMAGE) == 1 && "Only one type of input should be enable at a time");
-	init(argc,args);
-
-	char c = 'a';
-	Mat img;
-	while(c != 27){
-#if STATIC_IMAGE
-		if(!(ent = readdir (dir)))
+void *controlFunc(void *voidData){
+	Data* data = (Data*)voidData;
+	while (true) {
+		char c;
+		cin >> c;
+		if (c == '0')
 			break;
-		img = readImage(ent->d_name);
-#if SHOW_INPUT
-		if(!img.empty()) // check if file is directory or not image
-			imshow(ent->d_name, img);
-#endif //SHOW_INPUT
-#elif VIDEO || CAMERA
-		img = readImage(capture);
-#if SHOW_INPUT
-		if(img.empty())
-			break;
-		imshow("Preview", img);
-#endif //SHOW_INPUT
-#endif
-		if(!img.empty()){
-			Mat output = imgProcessing(img);
-			imshow("OUTPUT", output);
-		}
-		c = waitKey(WAIT_TIME);
+		data->carCtl->go();
 	}
-	exit();
+	pthread_exit(NULL);
 }
 
-
+int main(int argc, char** args){
+	Data data = Data();
+	pthread_t controlThread;
+	pthread_create(&controlThread,NULL,controlFunc, &data);
+	main_imgProcessing(argc,args,data);
+}

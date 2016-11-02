@@ -2,69 +2,84 @@
 #define _MAIN_H_
 
 #include "common.h"
-#include "dirent.h"
+#include "Model/DataStructure.h"
+#include "Controller/CarCtrl.h"
+#include "img_processing.h"
+#include "main_imgProcessingLib.h"
 
-// Variables, structures and classes
+void main_imgProcessing(int argc, char** args,Data &data);
+
+
+
+void main_imgProcessing(int argc, char** args,Data &data){
+	// assertions
+	assert((VIDEO + CAMERA + STATIC_IMAGE) == 1 && "Only one type of input should be enable at a time");
+	init(argc,args);
+
+	int frCount = 0;
+	float fps = 0;
+	bool isFirsFrm = true;
+
+	char c = 'a', d = 1;
+	Mat img;
+	clock_t t = clock();
+	while(c != 27){
 #if STATIC_IMAGE
-#define 	WAIT_TIME			0//2000
-	DIR *dir;
-	struct dirent *ent;
+		if(!(ent = readdir (dir)))
+			break;
+		img = readImage(ent->d_name);
+#if SHOW_INPUT
+		if(!img.empty()) // check if file is directory or not image
+			imshow(ent->d_name, img);
+#endif //SHOW_INPUT
 #elif VIDEO || CAMERA
-#define 	WAIT_TIME			1
-	VideoCapture capture;
+		img = readImage(capture);
+		frCount++;
+		clock_t delta = clock() - t;
+		float sec = (float)delta/CLOCKS_PER_SEC;
+		if( sec > 1){
+			fps = frCount/sec;
+			t = clock();
+			frCount = 0;
+		}
+#if SHOW_INPUT
+		if(img.empty())
+			break;
+		imshow("Preview", img);
+#endif //SHOW_INPUT
 #endif
+		if(img.empty())
+			continue;
+		Mat mvoOutput,map;
+		if(isFirsFrm){
+			perspectiveTransform(img,map);
+			laneProcessing(map, d, data);
+			isFirsFrm = false;
+		}
 
-// Function headers
-void init(int argc, char** args);
-void exit();
+		mvoFilter(img, mvoOutput, data);
+		Mat draw = Mat::zeros(img.size(), CV_8UC3);
+
+		data.showInterpolatedLineData(data.tempMat);
+		data.showLaneData(data.tempMat);
+		data.showCar(data.tempMat);
+
+		data.overLaneAssessment();
+		data.clearCarData();
+//		data.clear();
 
 
-// Predefined Functions
-void init(int argc, char** args){
+		ostringstream ss;
+		ss << fps;
+		putText(data.tempMat, ss.str(), Point(30, 30), FONT_HERSHEY_COMPLEX, 1,
+				Scalar(255, 255, 255), 1, CV_AA);
+		imshow("OUTPUT", data.tempMat);
 
-#if STATIC_IMAGE
-	dir = opendir (DATASET_DIR);
-	assert(dir && "Cannot open image directory");
-#elif CAMERA
-	int cameraId = 0;
-	if(argc > 1)
-		cameraId = atoi(args[1]);
-	capture = VideoCapture(cameraId);
-	assert(capture.isOpened() && "Cannot open the camera");
-#elif VIDEO
-	capture = VideoCapture(VIDEO_FILE);
-	assert(capture.isOpened() && "Cannot open video file");
-#endif
-}
+		//d++;
 
-void exit(){
-#if STATIC_IMAGE
-	if(dir)
-		closedir (dir);
-#endif
-}
-
-#if STATIC_IMAGE
-Mat readImage(string imgName)
-#elif VIDEO || CAMERA
-Mat readImage(VideoCapture &cap)
-#endif
-{
-	Mat input;
-#if STATIC_IMAGE
-	string imgPath = DATASET_DIR + imgName;
-	cout<<"\nReading Img:"<<imgName<<endl;
-	input = imread(imgPath);
-#elif VIDEO || CAMERA
-	cap >> input;
-#endif
-	if(input.empty())
-		perror("");
-	else{
-		int newRows = COLS/(input.cols*1.0/input.rows);
-		resize(input, input, Size(COLS,newRows));
+		c = waitKey(WAIT_TIME);
 	}
-	return input;
+	onExit();
 }
 
 #endif // !_MAIN_H_

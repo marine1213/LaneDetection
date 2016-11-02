@@ -4,6 +4,8 @@ SET(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 SET(CMAKE_DEPENDS_CHECK_CXX
+  "/home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/CarCtrl.cpp" "/home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/Build/Linux/CMakeFiles/LaneDetection.dir/home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/CarCtrl.cpp.o"
+  "/home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/draw_helper.cpp" "/home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/Build/Linux/CMakeFiles/LaneDetection.dir/home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/draw_helper.cpp.o"
   "/home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/img_processing.cpp" "/home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/Build/Linux/CMakeFiles/LaneDetection.dir/home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/img_processing.cpp.o"
   "/home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/main.cpp" "/home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/Build/Linux/CMakeFiles/LaneDetection.dir/home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/main.cpp.o"
   "/home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/my_tools.cpp" "/home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/Build/Linux/CMakeFiles/LaneDetection.dir/home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/my_tools.cpp.o"
@@ -16,7 +18,6 @@ SET(CMAKE_TARGET_LINKED_INFO_FILES
 
 # The include file search paths:
 SET(CMAKE_C_TARGET_INCLUDE_PATH
-  "../../../src"
   "/usr/local/include"
   "/usr/local/include/opencv"
   )

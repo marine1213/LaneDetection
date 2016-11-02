@@ -5,217 +5,247 @@
  *      Author: gnouchnam
  */
 #include "img_processing.h"
+#include "draw_helper.h"
 
-vector<Vec4i> lineDetection(Mat &src, string name);
+void laneDetection(Mat &src, LaneType laneType, vector<Lane*> &vLane);
+void get4Vertices(vector<Lane*> vLane, Size s,Point2f* output);
+void interpolateLane(vector<Lane*> &vLane, vector<Line*> &output);
 
-Mat imgProcessing (Mat &input){
+void select_points(int event, int x, int y, int flags, void* userdata);
 
-	Mat cleanedInput = input.clone();
-	int newRow = input.rows * 1.0/3;
-	rectangle(cleanedInput,Point(0,0),Point(input.cols - 1, newRow), Scalar(0,0,0),CV_FILLED);
 
-	Mat hlsImg;
-	cvtColor(cleanedInput,hlsImg,CV_BGR2HLS);
-
-	vector<Mat> hlsChannels(3);
-	split(hlsImg,hlsChannels);
-
-	// extract white area
-	Mat whiteMask, whiteImg;
-	inRange(hlsChannels[1],Scalar(200),Scalar(255),whiteMask);
-	bitwise_and(hlsChannels[1],hlsChannels[1],whiteImg,whiteMask);
-
-	vector<Vec4i> whiteLines = lineDetection(whiteImg, "white img");
-
-	// extract yellow area
-	Mat yellowMask, yellowImg, satMask;
-	inRange(hlsChannels[0],Scalar(10),Scalar(30),yellowMask);
-	threshold(hlsChannels[2],satMask,70,255,CV_THRESH_BINARY);
-	bitwise_and(hlsChannels[0],satMask,yellowImg,yellowMask);
-
-	threshold(yellowImg,yellowImg,0,255,CV_THRESH_BINARY);
-	vector<Vec4i> yellowLines = lineDetection(yellowImg, "yellow img");
-
-	for( size_t i = 0; i < whiteLines.size(); i++ )
-	{
-	  Vec4i l = whiteLines[i];
-	  line( input, Point(l[0], l[1]), Point(l[2], l[3]), Scalar(0,255,0), 3, CV_AA);
-	}
-	for( size_t i = 0; i < yellowLines.size(); i++ )
-	{
-	  Vec4i l = yellowLines[i];
-	  line( input, Point(l[0], l[1]), Point(l[2], l[3]), Scalar(255,0,0), 3, CV_AA);
-	}
-
-	return input;
+void perspectiveTransform(Mat &input, Mat &output){
+	input.copyTo(output);
 }
 
-vector<Vec4i> lineDetection(Mat &src, string name){
-	Mat cannyMorpSrc, morphSrc;
-	int morph_size = 4;
-	int morph_elem = 2;
-	Mat element = getStructuringElement( morph_elem, Size( 2*morph_size + 1, 2*morph_size+1 ), Point( morph_size, morph_size ) );
+void select_points(int event, int x, int y, int flags, void* userdata)
+{
+	if (event == EVENT_LBUTTONDOWN){//&& flags == EVENT_FLAG_CTRLKEY
+		cout << "Left button clicked pos x: " << x << ", pos y: " << y << endl;
+		Point2i *p = (Point2i *)userdata;
+		p->x = x;
+		p->y = y;
+	}
+}
 
-	morphologyEx(src,morphSrc,MORPH_CLOSE, element);
-	MorphologicalThinning(morphSrc,cannyMorpSrc);
-//	imshow("thin img"+name, cannyMorpSrc);
-	Canny(cannyMorpSrc,cannyMorpSrc,50,200,3);
+void laneProcessing(Mat &input, int imgId,Data &data) {
 
-	Mat houghLines = Mat(cannyMorpSrc);
-//	vector<Vec2f> lines;
-//	HoughLines(cannyMorpSrc, lines, 1, CV_PI/180, 70, 0, 0 );
+	if (imgId) {
+		//-------Delete 1/3 upper area of image to remove sky-----
+		//	int newRow = input.rows * 1.0 / 3;
+		//	rectangle(cleanedInput, Point(0, 0), Point(input.cols - 1, newRow),
+		//			Scalar(0, 0, 0), CV_FILLED);
+
+		//---------------------color filter-----------------------
+		Mat hlsImg;
+		cvtColor(input, hlsImg, CV_BGR2HLS);
+
+		Mat yellowMask, whiteMask;		// blackMaskHls;
+		inRange(hlsImg, Scalar(10, 0, 100), Scalar(30, 255, 255), yellowMask);
+		inRange(hlsImg, Scalar(0, 200, 0), Scalar(255, 255, 255), whiteMask);
+//		inRange(hlsImg, Scalar(0, 65, 0), Scalar(255, 145, 255), blackMaskHls);  // to get black area
+
+		//----------------extract lanes----------------------
+
+		laneDetection(whiteMask, WHITE_LANE, data.lanes);
+		//cout<<"Num of white lanes:"<<whiteLanes.size()<<endl;
+		vector<Lane*> yellowLanes;
+		laneDetection(yellowMask, YELLOW_LANE, yellowLanes);
+		//cout<<"Num of yellow lanes:"<<yellowLanes.size()<<endl;
+
+		//-----replace 2 lanes are on the same position-------
+		for (int i = 0; i < yellowLanes.size(); ++i) {
+			bool isReplaced = false;
+			for (int j = 0; j < data.lanes.size(); ++j) {
+				if(yellowLanes[i]->isOn(*(data.lanes[j]))){
+					delete (data.lanes[j]);
+					data.lanes[j] = yellowLanes[i];
+					isReplaced = true;
+				}
+			}
+			if(!isReplaced)
+				data.lanes.push_back(yellowLanes[i]);
+		}
+		//---------interpolate centerLine-----------------------
+		interpolateLane(data.lanes,data.interpolatedLines);
+	}
+}
+
+void laneDetection(Mat &src, LaneType laneType, vector<Lane*> &vLane) {
+	// prepare for close operator
+	Mat canMorp, morphSrc;
+	Mat element = getStructuringElement(2, Size(9, 9), Point(4, 4));
+
+	morphologyEx(src, morphSrc, MORPH_CLOSE, element); // close to fill the gaps in thick lane
+	Canny(morphSrc, canMorp, 50, 200, 3);		// get border of the lane
+
+	// prepare for contour operator
+	vector<vector<Point> > cnts;
+	vector<Vec4i> hier;
+	/// Find contours
+	findContours(canMorp, cnts, hier, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE);
+
+	/// Draw contours
+	Mat empty = Mat::zeros(canMorp.size(), CV_8UC1);
+	Mat draw = Mat::zeros(canMorp.size(), CV_8UC3);
+
+	vector<Line> vLine;			// Including all lines, to remove existed line
+
+	for (size_t i = 0; i < cnts.size(); i++) {
+		Mat drClone = empty.clone();
+		drawContours(drClone, cnts, i, Scalar(1), 1, 4, hier, 0, Point());
+		//drawContours(draw, cnts, i, Scalar(255, 0, 0), 1, 4, hier, 0, Point());
+
+		// find Hough lines
+		vector<Vec4i> lines;
+		vector<Line> lineInOneCnt;
+		HoughLinesP(drClone, lines, 1, CV_PI / 180, 50, 50, 10);
+		for (size_t i = 0; i < lines.size(); i++) {
+			Vec4i l = lines[i];
+			Line tempLine = Line(l[0], l[1], l[2], l[3]);
+
+			bool isNew = true;
+			for (int i = 0; i < vLine.size(); ++i) {
+				if (vLine[i].isOn(tempLine)) {
+					isNew = false;
+					break;
+				}
+			}
+			if (isNew) {
+				vLine.push_back(tempLine);
+				lineInOneCnt.push_back((tempLine));
+				line(draw, Point(l[0], l[1]), Point(l[2], l[3]),Scalar(0, 255, 0), 1, CV_AA);
+			}
+//			ostringstream str;
+//			str<<"Contours drawing "<<(laneType==WHITE_LANE?"White lane":"Yellow lane");
+//			imshow(str.str(), draw);
+		}
+
+		if(lineInOneCnt.size() == 2){
+			Lane *lane = new Lane(lineInOneCnt[0],lineInOneCnt[1],laneType);
+			vLane.push_back(lane);
+		}
+	}
+}
+void get4Vertices(vector<Lane*> vLane,Size s, Point2f* output){
+	vector<float> distTo0;
+	vector<float> dv;
+	// rearrange the order of lane -> has problem
+	for (int i = 0; i < vLane.size(); ++i) {
+		float d = vLane[i]->getAngle();
+		int idToIns = 0;
+		for (int j = 0; j < distTo0.size(); ++j) {
+			if(d<distTo0[j])
+				idToIns = j;
+		}
+		distTo0.insert(distTo0.begin() + idToIns,i);
+		dv.insert(dv.begin() + idToIns,d);
+	}
+
+	Lane *leftLane = vLane[distTo0.back()];
+	Lane *rightLane = vLane[distTo0[0]];
+
+	leftLane->getLeft()->setLimitedArea(0,0,s.width,s.height);
+	rightLane->getRight()->setLimitedArea(0,0,s.width,s.height);
+	float crossedPt[2];
+	leftLane->getLeft()->cross(*(leftLane->getRight()),crossedPt);
+	if(crossedPt[0] >= 0 && crossedPt[0] < s.width && crossedPt[1] >= 0 && crossedPt[1] <= s.height){
+		// crossed point is in desired area
+		leftLane->getLeft()->setLimitedArea(0,crossedPt[1]+10,s.width,s.height);
+		rightLane->getRight()->setLimitedArea(0,crossedPt[1]+10,s.width,s.height);
+	}
+	output[0] = Point2f(leftLane->getLeft()->getPoint()[0],leftLane->getLeft()->getPoint()[1]);
+	output[1] = Point2f(rightLane->getRight()->getPoint()[0],rightLane->getRight()->getPoint()[1]);
+	output[2] = Point2f(rightLane->getRight()->getPoint2()[0],rightLane->getRight()->getPoint2()[1]);
+	output[3] = Point2f(leftLane->getLeft()->getPoint2()[0],leftLane->getLeft()->getPoint2()[1]);
+
+//	Mat draw = Mat::zeros(s, CV_8UC3);
+//	drawLine(*(leftLane->getLeft()),draw);
+//	drawLine(*(rightLane->getRight()),draw);
+//	imshow("road detected", draw);
+	//==================== main code to use =============================
+//	if(whiteLanes.size()){
+//				Point2f inptsPerspective[4];
+//				get4Vertices(whiteLanes,Size(input.cols,input.rows), inptsPerspective);
+//				Point2f outptsPerspective[4] = {
+//						Point2f(0,0),Point2f(0,input.cols-1),
+//						Point2f(input.rows-1,input.cols-1),Point2f(input.rows-1,0)
+//				};
+//				Mat persMat = getPerspectiveTransform(inptsPerspective,outptsPerspective);
+//				Mat persOut = Mat::zeros(input.size(), CV_8UC3);
+//				warpPerspective(input,persOut,persMat,persOut.size());
 //
-
-//	for( size_t i = 0; i < lines.size(); i++ )
-//	{
-//	  float rho = lines[i][0], theta = lines[i][1];
-//	  Point pt1, pt2;
-//	  double a = cos(theta), b = sin(theta);
-//	  double x0 = a*rho, y0 = b*rho;
-//	  pt1.x = cvRound(x0 + 1000*(-b));
-//	  pt1.y = cvRound(y0 + 1000*(a));
-//	  pt2.x = cvRound(x0 - 1000*(-b));
-//	  pt2.y = cvRound(y0 - 1000*(a));
-//	  line( houghLines, pt1, pt2, Scalar(255,0,0), 3, CV_AA);
-//	}
-
-	vector<Vec4i> lines;
-	HoughLinesP(cannyMorpSrc, lines, 1, CV_PI/180, 50, 50, 10 );
-
-	return lines;
+//				imshow("Perspective",persOut);
+//			}
 }
 
-void MorphologicalThinning(Mat &pSrc, Mat &pDst) {
-        bool bDone = false;
-        int rows = pSrc.rows;
-        int cols = pSrc.cols;
-        /// pad source
-        Mat p_enlarged_src = Mat(rows + 2, cols + 2, CV_32FC1);
-        for(int i = 0; i < (rows+2); i++) {
-        	p_enlarged_src.at<float>(i, 0) = 0.0f;
-        	p_enlarged_src.at<float>(i, cols+1) = 0.0f;
-        }
-        for(int j = 0; j < (cols+2); j++) {
-        	p_enlarged_src.at<float>(0, j) = 0.0f;
-        	p_enlarged_src.at<float>(rows+1, j) = 0.0f;
-        }
-        for(int i = 0; i < rows; i++) {
-                for(int j = 0; j < cols; j++) {
-                        if (pSrc.at<char>(i, j) != 0) {
-                        	p_enlarged_src.at<float>(i+1, j+1) = 1.0f;
-                        }
-                        else
-                        	p_enlarged_src.at<float>(i+1, j+1) = 0.0f;
-                }
-        }
-
-        /// start to thin
-        Mat p_thinMat1,p_thinMat2,p_cmp;
-        while (bDone != true) {
-                /// sub-iteration 1
-                ThinSubiteration1(p_enlarged_src, p_thinMat1);
-                /// sub-iteration 2
-                ThinSubiteration2(p_thinMat1, p_thinMat2);
-                /// compare
-                compare(p_enlarged_src, p_thinMat2, p_cmp, CV_CMP_EQ);
-                /// check
-                int num_non_zero = countNonZero(p_cmp);
-                if(num_non_zero == (rows + 2) * (cols + 2)) {
-                        bDone = true;
-                }
-                /// copy
-                p_thinMat2.copyTo(p_enlarged_src);
-
-        }
-        p_enlarged_src.convertTo(pDst,CV_8UC1,255);
+void interpolateLane(vector<Lane*> &vLane, vector<Line*> &output){
+	if (vLane.size() > 1) {
+		vector<float> angleList;
+		vector<float> idList;
+		// rearrange the order of lane
+		for (int i = 0; i < vLane.size(); ++i) {
+			float angle = vLane[i]->getAngle();
+			int idToIns = 0;
+			for (int j = 0; j < angleList.size(); ++j)
+				if(angle < angleList[j])
+					idToIns = j;
+			angleList.insert(angleList.begin() + idToIns,angle);
+			idList.insert(idList.begin() + idToIns,i);
+		}
+		// find midline of each lane
+		for (int i = 0; i < idList.size() - 1; ++i) {
+			Line *cL1 = vLane[idList[i]]->getCenter();
+			Line *cL2 = vLane[idList[i + 1]]->getCenter();
+			Line *vCter = cL1->findMidLine(*(cL2),1.0/2);
+			output.push_back(vCter);
+			Line *vLine = cL1->findMidLine(*(cL2),3.0/8);
+			output.push_back(vLine);
+			Line *vLine2 = cL1->findMidLine(*(cL2),5.0/8);
+			output.push_back(vLine2);
+		}
+	}
 }
 
-void ThinSubiteration1(Mat & pSrc, Mat & pDst) {
-    int rows = pSrc.rows;
-    int cols = pSrc.cols;
-    pSrc.copyTo(pDst);
-    for(int i = 1; i < rows-1; i++) {
-            for(int j = 1; j < cols-1; j++) {
-                    if(pSrc.at<float>(i, j) == 1) {
-                            /// get 8 neighbors
-                            /// calculate C(p)
-                            int neighbor0 = (int) pSrc.at<float>( i-1, j-1);
-                            int neighbor1 = (int) pSrc.at<float>( i-1, j);
-                            int neighbor2 = (int) pSrc.at<float>( i-1, j+1);
-                            int neighbor3 = (int) pSrc.at<float>( i, j+1);
-                            int neighbor4 = (int) pSrc.at<float>( i+1, j+1);
-                            int neighbor5 = (int) pSrc.at<float>( i+1, j);
-                            int neighbor6 = (int) pSrc.at<float>( i+1, j-1);
-                            int neighbor7 = (int) pSrc.at<float>( i, j-1);
-                            int C = int(~neighbor1 & ( neighbor2 | neighbor3)) +
-                                             int(~neighbor3 & ( neighbor4 | neighbor5)) +
-                                             int(~neighbor5 & ( neighbor6 | neighbor7)) +
-                                             int(~neighbor7 & ( neighbor0 | neighbor1));
-                            if(C == 1) {
-                                    /// calculate N
-                                    int N1 = int(neighbor0 | neighbor1) +
-                                                     int(neighbor2 | neighbor3) +
-                                                     int(neighbor4 | neighbor5) +
-                                                     int(neighbor6 | neighbor7);
-                                    int N2 = int(neighbor1 | neighbor2) +
-                                                     int(neighbor3 | neighbor4) +
-                                                     int(neighbor5 | neighbor6) +
-                                                     int(neighbor7 | neighbor0);
-                                    int N = min(N1,N2);
-                                    if ((N == 2) || (N == 3)) {
-                                            /// calculate criteria 3
-                                            int c3 = ( neighbor1 | neighbor2 | ~neighbor4) & neighbor3;
-                                            if(c3 == 0) {
-                                                    pDst.at<float>( i, j) = 0.0f;
-                                            }
-                                    }
-                            }
-                    }
-            }
-    }
+void mvoDetection(Mat &img,Data &outputData);
+
+Mat elm = getStructuringElement(CV_SHAPE_ELLIPSE, Size(5, 5));
+
+void mvoFilter(Mat &input, Mat &output,Data &data){
+	Mat grayInput;
+	cvtColor(input, grayInput, COLOR_BGR2GRAY);
+	data.pMOG2->apply(grayInput, output,0.00);
+	morphologyEx(output, output, MORPH_CLOSE, elm);
+	imshow("mov obj thres close",output);
+	mvoDetection(output,data);
 }
 
+void mvoDetection(Mat &img,Data &data){
+	vector<vector<Point> > cnts;
+	vector<Vec4i> hier;
+	/// Find contours
+	findContours(img, cnts, hier, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE);
 
-void ThinSubiteration2(Mat & pSrc, Mat & pDst) {
-    int rows = pSrc.rows;
-    int cols = pSrc.cols;
-    pSrc.copyTo( pDst);
-    for(int i = 1; i < rows-1; i++) {
-            for(int j = 1; j < cols-1; j++) {
-                    if (pSrc.at<float>( i, j) == 1) {
-                            /// get 8 neighbors
-                            /// calculate C(p)
-                        int neighbor0 = (int) pSrc.at<float>( i-1, j-1);
-                        int neighbor1 = (int) pSrc.at<float>( i-1, j);
-                        int neighbor2 = (int) pSrc.at<float>( i-1, j+1);
-                        int neighbor3 = (int) pSrc.at<float>( i, j+1);
-                        int neighbor4 = (int) pSrc.at<float>( i+1, j+1);
-                        int neighbor5 = (int) pSrc.at<float>( i+1, j);
-                        int neighbor6 = (int) pSrc.at<float>( i+1, j-1);
-                        int neighbor7 = (int) pSrc.at<float>( i, j-1);
-                            int C = int(~neighbor1 & ( neighbor2 | neighbor3)) +
-                                    int(~neighbor3 & ( neighbor4 | neighbor5)) +
-                                    int(~neighbor5 & ( neighbor6 | neighbor7)) +
-                                    int(~neighbor7 & ( neighbor0 | neighbor1));
-                            if(C == 1) {
-                                    /// calculate N
-                                    int N1 = int(neighbor0 | neighbor1) +
-                                            int(neighbor2 | neighbor3) +
-                                            int(neighbor4 | neighbor5) +
-                                            int(neighbor6 | neighbor7);
-                                    int N2 = int(neighbor1 | neighbor2) +
-                                            int(neighbor3 | neighbor4) +
-                                            int(neighbor5 | neighbor6) +
-                                            int(neighbor7 | neighbor0);
-                                    int N = min(N1,N2);
-                                    if((N == 2) || (N == 3)) {
-                                            int E = (neighbor5 | neighbor6 | ~neighbor0) & neighbor7;
-                                            if(E == 0) {
-                                                    pDst.at<float>(i, j) = 0.0f;
-                                            }
-                                    }
-                            }
-                    }
-            }
-    }
+	/// Draw contours
+	Mat draw = Mat::zeros(img.size(), CV_8UC3);
+
+	//vector<Line> vLine;			// Including all lines, to remove existed line
+
+	for (size_t i = 0; i < cnts.size(); i++) {
+		float area = contourArea(cnts[i]);
+		vector<int> vPt;
+		if(area>100){
+			drawContours(draw, cnts, i, Scalar(0,255,255), 1, 4, hier, 0, Point());
+			RotatedRect rrect = minAreaRect(cnts[i]);
+			Point2f vPt[4]; rrect.points( vPt );
+
+			float xc = rrect.center.x;
+			float yc = rrect.center.y;
+			if(data.car)
+				data.car->updateCoor(vPt[0].x, vPt[0].y, vPt[1].x, vPt[1].y, vPt[2].x, vPt[2].y,vPt[3].x, vPt[3].y, xc, yc);
+			else
+				data.car = new Car(vPt[0].x, vPt[0].y, vPt[1].x, vPt[1].y, vPt[2].x, vPt[2].y,vPt[3].x, vPt[3].y, xc, yc);
+		}
+	}
+	draw.copyTo(data.tempMat);
 }

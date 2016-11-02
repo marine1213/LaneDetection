@@ -111,6 +111,54 @@ LaneDetection/fast:
 	$(MAKE) -f CMakeFiles/LaneDetection.dir/build.make CMakeFiles/LaneDetection.dir/build
 .PHONY : LaneDetection/fast
 
+home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/CarCtrl.o: home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/CarCtrl.cpp.o
+.PHONY : home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/CarCtrl.o
+
+# target to build an object file
+home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/CarCtrl.cpp.o:
+	$(MAKE) -f CMakeFiles/LaneDetection.dir/build.make CMakeFiles/LaneDetection.dir/home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/CarCtrl.cpp.o
+.PHONY : home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/CarCtrl.cpp.o
+
+home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/CarCtrl.i: home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/CarCtrl.cpp.i
+.PHONY : home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/CarCtrl.i
+
+# target to preprocess a source file
+home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/CarCtrl.cpp.i:
+	$(MAKE) -f CMakeFiles/LaneDetection.dir/build.make CMakeFiles/LaneDetection.dir/home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/CarCtrl.cpp.i
+.PHONY : home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/CarCtrl.cpp.i
+
+home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/CarCtrl.s: home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/CarCtrl.cpp.s
+.PHONY : home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/CarCtrl.s
+
+# target to generate assembly for a file
+home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/CarCtrl.cpp.s:
+	$(MAKE) -f CMakeFiles/LaneDetection.dir/build.make CMakeFiles/LaneDetection.dir/home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/CarCtrl.cpp.s
+.PHONY : home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/CarCtrl.cpp.s
+
+home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/draw_helper.o: home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/draw_helper.cpp.o
+.PHONY : home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/draw_helper.o
+
+# target to build an object file
+home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/draw_helper.cpp.o:
+	$(MAKE) -f CMakeFiles/LaneDetection.dir/build.make CMakeFiles/LaneDetection.dir/home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/draw_helper.cpp.o
+.PHONY : home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/draw_helper.cpp.o
+
+home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/draw_helper.i: home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/draw_helper.cpp.i
+.PHONY : home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/draw_helper.i
+
+# target to preprocess a source file
+home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/draw_helper.cpp.i:
+	$(MAKE) -f CMakeFiles/LaneDetection.dir/build.make CMakeFiles/LaneDetection.dir/home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/draw_helper.cpp.i
+.PHONY : home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/draw_helper.cpp.i
+
+home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/draw_helper.s: home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/draw_helper.cpp.s
+.PHONY : home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/draw_helper.s
+
+# target to generate assembly for a file
+home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/draw_helper.cpp.s:
+	$(MAKE) -f CMakeFiles/LaneDetection.dir/build.make CMakeFiles/LaneDetection.dir/home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/draw_helper.cpp.s
+.PHONY : home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/draw_helper.cpp.s
+
 home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/img_processing.o: home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/img_processing.cpp.o
 .PHONY : home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/img_processing.o
 
@@ -192,6 +240,12 @@ help:
 	@echo "... LaneDetection"
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
+	@echo "... home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/CarCtrl.o"
+	@echo "... home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/CarCtrl.i"
+	@echo "... home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/CarCtrl.s"
+	@echo "... home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/draw_helper.o"
+	@echo "... home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/draw_helper.i"
+	@echo "... home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/draw_helper.s"
 	@echo "... home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/img_processing.o"
 	@echo "... home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/img_processing.i"
 	@echo "... home/gnouchnam/opncvws/OpencvWorkspace/LaneDetection/src/img_processing.s"
