@@ -1,0 +1,28 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/gnouchnam/OpencvWorkspace/LaneDetection/RunnedByEclipse/src/Controller/SerialCtrl.h
+fcntl.h
+-
+termios.h
+-
+unistd.h
+-
+errno.h
+-
+iostream
+-
+string.h
+-
+
+/home/gnouchnam/OpencvWorkspace/LaneDetection/RunnedByEclipse/src/Model/testSerialCtrl.cpp
+../Controller/SerialCtrl.h
+/home/gnouchnam/OpencvWorkspace/LaneDetection/RunnedByEclipse/src/Controller/SerialCtrl.h
+stdlib.h
+-
+
