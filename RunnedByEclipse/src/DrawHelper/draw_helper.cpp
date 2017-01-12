@@ -8,10 +8,10 @@
 
 #include "draw_helper.h"
 
-void drawPointsBuffer(PointSeries *buffer, Mat &img){
+void drawPointsBuffer(PointSeries *buffer, Mat &img, Scalar color){
 	for (int i = 0; i < buffer->size(); ++i) {
 		Point pt = Point(buffer->get(i)[0], buffer->get(i)[1]);
-		circle(img,pt,2,Scalar(128,255,128),3);
+		circle(img,pt,2,color,3);
 	}
 }
 
@@ -56,24 +56,27 @@ void drawIntersectionBorder(IntersectionBorder &ib, Mat &img){
 }
 
 void drawCar(Car &car, Mat &img, vector<Scalar> colorPt){
-	Point plf = Point(car.t()[car.getLfId()], car.t()[car.getLfId()+1]);
-	Point prf = Point(car.t()[car.getRfId()], car.t()[car.getRfId()+1]);
-	Point plr = Point(car.t()[car.getLrId()], car.t()[car.getLrId()+1]);
-	Point prr = Point(car.t()[car.getRrId()], car.t()[car.getRrId()+1]);
-	Point pct = Point(car.getCenterPt()[0], car.getCenterPt()[1]);
+	if(car.getTires().size() == 5){
+		Point plf = Point(car.getTires()[4].x, car.getTires()[4].y);
+		Point prf = Point(car.getTires()[1].x, car.getTires()[1].y);
+		Point plr = Point(car.getTires()[2].x, car.getTires()[2].y);
+		Point prr = Point(car.getTires()[3].x, car.getTires()[3].y);
 
+		circle(img,plf,2,Scalar(255,255,255),3);
+		circle(img,prf,2,Scalar(255,255,255),3);
+		circle(img,plr,2,Scalar(255,255,255),3);
+		circle(img,prr,2,Scalar(255,255,255),3);
+	}
 	int idp = 0;
-	circle(img,plf,2,colorPt[idp],3);
-	circle(img,prf,2,Scalar(255,255,0),3);
-	circle(img,plr,2,Scalar(255,0,255),3);
-	circle(img,prr,2,Scalar(128,255,255),3);
+
+	Point pct = Point(car.getCenterPt()[0], car.getCenterPt()[1]);
 	circle(img,pct,2,colorPt[idp],3);
 
-	int idl = colorPt.size()>0?1:0;
-	line(img, plf, prf,colorPt[idl], 2, CV_AA);
-	line(img, prf, prr,colorPt[idl], 2, CV_AA);
-	line(img, prr, plr,colorPt[idl], 2, CV_AA);
-	line(img, plr, plf,colorPt[idl], 2, CV_AA);
+//	int idl = colorPt.size()>0?1:0;
+//	line(img, plf, prf,colorPt[idl], 2, CV_AA);
+//	line(img, prf, prr,colorPt[idl], 2, CV_AA);
+//	line(img, prr, plr,colorPt[idl], 2, CV_AA);
+//	line(img, plr, plf,colorPt[idl], 2, CV_AA);
 }
 
 void drawLane(Lane &lane, Mat &img){

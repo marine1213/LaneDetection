@@ -1,141 +1,154 @@
 /*
  * CarCtrl.h
  *
- *  Created on: Oct 26, 2016
+ *  Created on: Dec 29, 2016
  *      Author: gnouchnam
  */
 
-#ifndef CARCTRL_H_
-#define CARCTRL_H_
+#ifndef SRC_CONTROLLER_CARCTRL_H_
+#define SRC_CONTROLLER_CARCTRL_H_
 
-#include "SerialCtrl.h"
-#include "string.h"
-#include <stdlib.h>
-#include <pthread.h>
 
-void *goScenario(void* data);
+#include "../Model/CarElements/Path.h"
+#include "../Model/DataBundle.h"
+#include "../Threads/DriveThread.h"
 
-class CarCtrl {
+class CarCtrl{
+
 private:
-	SerialCtrl *ctrl;
-	pthread_t *goingThread, *shockSpeedThread;
+	DataBundle *data;
 
+	Path path;
+	CarComm carComm;
+	Path::TurningControl direction;
 
-	int	previousState;
-	// to be shown
-	char *eventMsg;
+	LinesInterface	*myIpl;
+	DriveThread		*driveThread;
+
 
 public:
-	bool	isRunning;
-	bool 	isWorking;
-	bool	isSudden;
-	// to be shown
-	float dStop;
 
-	CarCtrl(){
-		cout<<"car ctrl constructor"<<endl;
-		ctrl = new SerialCtrl();
-
-		ctrl->writeData("c410");
-		ctrl->writeData("4");
-
-		goingThread = (pthread_t*)malloc(sizeof(pthread_t));
-		shockSpeedThread = (pthread_t*)malloc(sizeof(pthread_t));
-
-		isWorking = isRunning = false;
-		previousState 	= 0;
-		dStop 			= 0;
-		eventMsg 		= NULL;
-		isSudden		= true;
+	CarCtrl(DataBundle *sourceData){
+		myIpl 				= 0;
+		data 				= sourceData;
+		direction			= Path::GOING_STRAIGHT;				// going straight
+		driveThread			= new DriveThread(&carComm);
 	}
 
 	~CarCtrl(){
-		cout<<"Car control Destructor"<<endl;
-		//pthread_cancel(*workerThread);
-		delete ctrl;
-		delete goingThread;
-		delete shockSpeedThread;
+		delete driveThread;
 	}
 
-	void go(){
-		isWorking = true;
-		pthread_create(goingThread,NULL,goScenario, this);
-	}
-
-	void moveLittleLeft(){
-		if(isRunning){// && previousState != -1
-			ctrl->writeData("4");
+	//==================== locate nearest border to the car =====================
+	/**
+	 * Locate current border position of car and find appropriate interpolated lines
+	 */
+	void findMyPosition(){
+		//------------------------------------------------------------
+		// find which area that the car belong to
+		//------------------------------------------------------------
+		int borderId = -1;
+		for (int i = 0; i < 4; ++i) {
+			int withinId = data->getIntersection()->getBorders()[i]->within(data->getCarData()->getCenterPt()[0],data->getCarData()->getCenterPt()[1],true);
+			if(withinId == -1)
+				continue;
+			else{
+				borderId = i;
+				path.setLaneId(withinId);
+				// when the car knows where it is and where it should go
+				// setup connection between 2 areas
+				break;
+			}
 		}
-	}
-
-	void turnStraight(){
-		if(isRunning){// && previousState != -1
-			ctrl->writeData("5");
-		}
-	}
-
-	void turnLeft(){
-		if(isRunning){// && previousState != -1
-			ctrl->writeData("7");
-		}
-	}
-
-	void turnRight(){
-		if(isRunning ){//&& previousState != 1
-			ctrl->writeData("9");
-		}
-	}
-
-	void moveLittleRight(){
-		if(isRunning ){//&& previousState != 1
-			ctrl->writeData("6");
-		}
-	}
-
-	void stop(){
-		if(isRunning ){//&& previousState != 1
-			ctrl->writeData("2");
-		}
-	}
-
-	void setTurnLeftAngle(){
-		ctrl->writeData("c715");
-	}
-
-	void setTurnRightAngle(){
-		ctrl->writeData("c730");
-	}
-
-	void haltCurrentWork(){
-		isWorking = false;
-	}
-
-	void goStraight(){
-		if(isRunning ){//&& previousState != 0
-			ctrl->writeData("5");
-			previousState = 0;
-			usleep(30);
+		if(data->getIntersection()->withinCeterArea(data->getCarData()->getCenterPt()[0],data->getCarData()->getCenterPt()[1]))
+			borderId = INTERSECTION;
+		path.setCurrentBorder(borderId);
+		//------------------------------------------------------------
+		// find appropriate interpolated lines for the car
+		//------------------------------------------------------------
+		if (path.getCurrentBorderId() == INTERSECTION) {
+			int destBorderId = path.getDestinationBorderId();
+			if (path.isBorderIdValid(destBorderId))
+				myIpl = data->getIntersection()->getBorders()[destBorderId]->getIpl()[IPLS_INPUT];
+		} else if (path.isPositionValid()) {// INTERSECTION will throw null pointer when get border
+			myIpl = data->getIntersection()->getBorders()[path.getCurrentBorderId()]->getIpl()[path.getLaneId()];
 		}
 	}
 
 
-	SerialCtrl* getSerialCtrl() {
-		return ctrl;
+	//================== find the line for turning ========================
+
+	Line* getTurningLine(){
+		// if car intention is not to turn, return
+		// if distance to turning line < threshold = 20, set big turning
+		// if relative angle with destination center < threshold = 3, keep balance
+
+		// first
+//		if(!path.isPathValid())
+//			return NULL;
+
+		direction = path.getDirectionArg();
+		if(direction != Path::TURNING_LEFT && direction != Path::TURNING_RIGHT)
+			return NULL;
+
+		// second
+		IntersectionBorder *ib = data->getIntersection()->getBorders()[path.getDestinationBorderId()];
+
+		// get trigger turning line
+		if(direction == Path::TURNING_LEFT){
+			return ib->getYellowLane()->getCenter();
+		}
+		if(direction == Path::TURNING_RIGHT){
+			return ib->getLeftLane()->getCenter();
+		}
+		return NULL;
+	}
+	//=========================================================================
+
+	//=================== find angle for calibrating ==========================
+	void angleToNextCenterLine(){
+		LinesInterface *lineIntf = NULL;
+		if (data->getCarData()->getBuff2Kal()->size() == 2 && data->getCarData()->isMoving()) {
+			lineIntf = data->getIntersection()->getBorders()[path.getDestinationBorderId()]->getIpl()[IPLS_INPUT];
+			if (lineIntf) {
+				Line *cLine = lineIntf->getCenterExLine();
+				float *rearPt = data->getCarData()->getBuff2Kal()->get(1);
+				float *frontPt = data->getCarData()->getBuff2Kal()->get(0);
+				Line tempLine = Line(rearPt[0], rearPt[1], frontPt[0], frontPt[1]);
+				data->getCarData()->setRelativeAngle(tempLine.angle(*cLine));
+#if SHOW_PROCESSING_STATE
+				cout << "angle:" << relativeAngle << endl;
+#endif
+			}
+		}
+	}
+	//=========================================================================
+	DriveThread* getDriveThread(){
+		return driveThread;
+	}
+	/**
+	 * result stored after turning line
+	 */
+	Path::TurningControl getDirection(){
+		return direction;
 	}
 
-	void setEventMsg(const char *str){
-		int len = strlen(str);
-		if(eventMsg)
-			delete eventMsg;
-		eventMsg = (char*)malloc(len * sizeof(char));
-		memcpy(eventMsg,str,len);
+	Path& getPath() {
+		return path;
 	}
 
-	char* getEventMsg() const{
-		if(!eventMsg)
-			return "";
-		return eventMsg;
+	LinesInterface* getIplines() const {
+		return myIpl;
+	}
+
+	CarComm& getCarComm() {
+		return carComm;
+	}
+
+	DataBundle* getData(){
+		return data;
 	}
 };
 
-#endif /* CARCTRL_H_ */
+
+#endif /* SRC_CONTROLLER_CARCTRL_H_ */

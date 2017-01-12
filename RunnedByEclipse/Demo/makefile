@@ -9,6 +9,9 @@ RM := rm -rf
 # All of the sources participating in the build are defined here
 -include sources.mk
 -include src/unsused/subdir.mk
+-include src/ThreadImgProcessing/subdir.mk
+-include src/System/subdir.mk
+-include src/ExternalAlgorithm/subdir.mk
 -include src/DrawHelper/subdir.mk
 -include src/Controller/subdir.mk
 -include src/subdir.mk

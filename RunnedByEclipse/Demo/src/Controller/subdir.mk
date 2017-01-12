@@ -4,16 +4,16 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 CPP_SRCS += \
-../src/Controller/CarCtrl.cpp \
-../src/Controller/ControlInstructor.cpp 
+../src/Controller/ControlInstructor.cpp \
+../src/Controller/testCarComm.cpp 
 
 OBJS += \
-./src/Controller/CarCtrl.o \
-./src/Controller/ControlInstructor.o 
+./src/Controller/ControlInstructor.o \
+./src/Controller/testCarComm.o 
 
 CPP_DEPS += \
-./src/Controller/CarCtrl.d \
-./src/Controller/ControlInstructor.d 
+./src/Controller/ControlInstructor.d \
+./src/Controller/testCarComm.d 
 
 
 # Each subdirectory must supply rules for building sources it contributes

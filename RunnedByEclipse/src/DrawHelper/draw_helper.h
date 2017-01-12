@@ -9,16 +9,15 @@
 #define DRAW_HELPER_H_
 
 #include "../common.h"
-#include "../Model/Lane.h"
-#include "../Model/Lane.h"
-#include "../Model/Car.h"
-#include "../Model/IntersectionBorder.h"
-#include "../Model/Intersection.h"
-#include "../Model/LinesInterpolator.h"
-#include "../Model/LinesConnector.h"
-#include "../Model/PointSeries.h"
+#include "../Model/IntersectionElements/Lane.h"
+#include "../Model/IntersectionElements/IntersectionBorder.h"
+#include "../Model/IntersectionElements/Intersection.h"
+#include "../Model/IntersectionElements/LinesInterpolator.h"
+#include "../Model/IntersectionElements/LinesConnector.h"
+#include "../Model/CarElements/PointSeries.h"
+#include "../Model/CarElements/Car.h"
 
-void drawPointsBuffer(PointSeries *buffer, Mat &img);
+void drawPointsBuffer(PointSeries *buffer, Mat &img, Scalar color = Scalar(128,255,128));
 
 void drawConnectorLines(LinesConnector *cntor, Mat &img, Scalar *color = NULL);
 void drawInterpolatedLines(LinesInterpolator *ipl, Mat &img);

@@ -4,17 +4,17 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 CPP_SRCS += \
-../src/img_processing.cpp \
+../src/cameraFrameWork.cpp \
 ../src/main.cpp \
 ../src/my_tools.cpp 
 
 OBJS += \
-./src/img_processing.o \
+./src/cameraFrameWork.o \
 ./src/main.o \
 ./src/my_tools.o 
 
 CPP_DEPS += \
-./src/img_processing.d \
+./src/cameraFrameWork.d \
 ./src/main.d \
 ./src/my_tools.d 
 

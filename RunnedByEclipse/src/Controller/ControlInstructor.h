@@ -9,17 +9,14 @@
 #define SRC_CONTROLLER_CONTROLINSTRUCTOR_H_
 
 
-#include "CarCtrl.h"
-#include "../Model/Car.h"
-#include "../Model/Path.h"
 #include "time.h"
 #include "iostream"
 
-
-void areaChangeResponse(Path::AreaChangeEvent event, Path *dispatcher, CarCtrl &ctrl);
-
-void sideStateResponse(Car::SideStateEvent event, Car *dispatcher, CarCtrl &ctrl);
-
-void frontStateResponse(Car::FrontStateEvent event, Car *dispatcher, CarCtrl &ctrl);
+//
+//void areaChangeResponse(Path::AreaChangeEvent event, Path *dispatcher, CarComm &ctrl);
+//
+//void sideStateResponse(CarCtrl::SideStateEvent event, Car *dispatcher, CarComm &ctrl);
+//
+//void frontStateResponse(CarCtrl::FrontStateEvent event, Car *dispatcher, CarComm &ctrl);
 
 #endif /* SRC_CONTROLLER_CONTROLINSTRUCTOR_H_ */

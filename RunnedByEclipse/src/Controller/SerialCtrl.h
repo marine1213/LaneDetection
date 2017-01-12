@@ -35,7 +35,9 @@ private:
 		rfAbility = true;
 		if ((fd = open(device, O_WRONLY | O_NOCTTY)) < 0)
 			rfAbility = false;
+#if SHOW_RF_STATE
 		cout<<"RF descriptor: "<<fd<<endl;
+#endif
 		return rfAbility;
 	}
 
@@ -78,7 +80,9 @@ public:
 	}
 
 	~SerialCtrl() {
+#if SHOW_CLASSES_STATE
 		cout<<"Serial Destructor"<<endl;
+#endif
 		close(fd);
 	}
 
@@ -87,11 +91,14 @@ public:
 		int  len = strlen(data);
 		bytes_written = write(fd,data, len);
 
+#if SHOW_RF_STATE
 		cout<<"Sent:"<<data<<endl;
-		if(bytes_written != len){
-			cout<<"byte written = "<< bytes_written<<endl;
-			cout<<"size of data = "<< len<<endl;
-		}
+
+//		if(bytes_written != len){
+//			cout<<"byte written = "<< bytes_written<<endl;
+//			cout<<"size of data = "<< len<<endl;
+//		}
+#endif
 	}
 
 	char* readData(int buffSize = 16){

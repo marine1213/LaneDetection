@@ -1,28 +1,36 @@
 #ifndef _MAIN_H_
 #define _MAIN_H_
 
+#include "cameraFrameWork.h"
 #include "common.h"
-#include "Model/DataStructure.h"
 #include "Controller/CarCtrl.h"
-#include "img_processing.h"
-#include "main_imgProcessingLib.h"
+#include "ThreadImgProcessing/MvoDetectionThread.h"
+#include "ThreadImgProcessing/ShowOutputThread.h"
+#include "ThreadImgProcessing/img_processing.h"
 
-void main_imgProcessing(int argc, char** args,Data &data);
+void main_imgProcessing(int argc, char** args,DataBundle &data, CarCtrl &carCtrl);
 
 
 
-void main_imgProcessing(int argc, char** args,Data &data){
+void main_imgProcessing(int argc, char** args,DataBundle &data, CarCtrl &carCtrl){
 	// assertions
 	assert((VIDEO + CAMERA + STATIC_IMAGE) == 1 && "Only one type of input should be enable at a time");
-	init(argc,args);
+	init(argc,args,data);
+
+	int destBorderId = BORDER_LEFT;//, startBorderId = BORDER_BOTTOM;
 
 	int frCount = 0;
 	float fps = 0;
 	bool isFirsFrm = true;
-	int destBorderId = BORDER_TOP, startBorderId = BORDER_BOTTOM;
 
 	char c = 'a', d = 1;
 	Mat img, map;
+
+	carCtrl.getPath().setDestinationBorder(destBorderId);
+	ThreadsManager		threadManager(&carCtrl);
+	MvoDetectionThread 	mvoDectectionThread(threadManager);
+//	ShowOutputThread	showOutputThread;
+
 	clock_t t = clock();
 	while(c != 27){
 #if STATIC_IMAGE
@@ -34,7 +42,7 @@ void main_imgProcessing(int argc, char** args,Data &data){
 			imshow(ent->d_name, img);
 #endif //SHOW_INPUT
 #elif VIDEO || CAMERA
-		img = readImage(capture);
+		img = readImage();
 		frCount++;
 		clock_t delta = clock() - t;
 		float sec = (float)delta/CLOCKS_PER_SEC;
@@ -51,75 +59,72 @@ void main_imgProcessing(int argc, char** args,Data &data){
 #endif
 		if(img.empty())
 			continue;
-		Mat mvoOutput;
+		img.copyTo(data.getInput());
+
 		if(isFirsFrm){
 //			perspectiveTransform(img,map);
-			setupPPMap(img,data.transformMat,map);
+			// setup perspective area
+			setupPPMap(img,data.getTransformMat(),map);
 			cout<<"setup perspective map completed"<<endl;
-			data.tmpDetectionImg = Mat::zeros(map.size(), CV_8UC3);
 			imshow("map",map);
+			// create intersection model and temp detection image
 			data.setupIntersection(map.cols,map.rows);
 			cout<<"setup size for intersection completed"<<endl;
+			// merge lane with intersection
 			laneProcessing(map, d, data);
 			cout<<"Finding lane completed"<<endl;
-			data.intersection->setupCenterArea();
-			cout<<"setup intersectionc completed"<<endl;
+			// recognize center area
+			data.getIntersection()->setupCenterArea();
+			cout<<"setup intersection completed"<<endl;
 			isFirsFrm = false;
+
+			data.showIntersection(*data.getTmpDetectionImg());
+			data.showInterpolatedLineData(*data.getTmpDetectionImg());
+			//pixelPicker(data.tmpDetectionImg);
+
+		}
+		mvoDectectionThread.startThread();
+
+		if(c=='s'){
+			if(!carCtrl.getDriveThread()->isRunning()){
+				carCtrl.getData()->getCarData()->clearBuffer();
+				carCtrl.getDriveThread()->input(Constant::START_EVENT);
+			}
 		}
 
-		//imwrite("intersection.jpg",img);
-		mvoFilter(img, mvoOutput, data);
-
-		data.showIntersection(data.tmpDetectionImg);
-		data.showInterpolatedLineData(data.tmpDetectionImg);
-
-		Mat tempImg = data.tmpDetectionImg.clone();
+		Mat tempImg = data.getTmpDetectionImg()->clone();
 		Mat mapCln = map.clone();
-		LinesConnector *ipl = data.intersection->createPath(startBorderId, destBorderId);
-		drawConnectorLines(ipl, tempImg);
-		Scalar black = Scalar(0,0,0);
-		drawConnectorLines(ipl, mapCln, &black);
-
-		delete ipl;
-
-		char nextId = cvWaitKey(1);
-		if(nextId == 'c'){
-			destBorderId = (destBorderId+1)%4;
-			if(destBorderId == startBorderId)
-				destBorderId = (destBorderId+1)%4;
-		}
-		if(nextId == 'd'){
-			startBorderId = (startBorderId+1)%4;
-			if(startBorderId == destBorderId)
-				startBorderId = (startBorderId+1)%4;
-		}
 
 		data.showCar(tempImg);
 		data.showCar(mapCln);
 
-		data.overLaneAssessment(destBorderId);
-		if(data.getCarObj()){
-			drawPointsBuffer(data.getCarObj()->getBuff100Pts(), tempImg);
+		if(data.getCarData()){
+			drawPointsBuffer(data.getCarData()->getBuff50Pts(), tempImg);
+			drawPointsBuffer(data.getCarData()->getBuff50Kal(), tempImg, Scalar(255,0,0));
 		}
-//		data.clearCarData();
 
 		imshow("express lanes", tempImg);
 		ostringstream ss,ss1,ss2,ss3;
-		ss <<"FPS="<<fps <<" - D="<<data.carCtl->dStop<<" - "<<data.carCtl->getEventMsg();
+		ss <<"FPS="<<fps;
 		putText(mapCln, ss.str(), Point(30, 30), FONT_HERSHEY_COMPLEX, 0.5,Scalar(255, 255, 255), 1, CV_AA);
-		ss1 <<"BorderID:"<<data.getCarObj()->getPath().getCurrentBorderId();
-		ss1 <<" - LaneID:"<<data.getCarObj()->getLaneId();
-		putText(mapCln, ss1.str(), Point(30, 60), FONT_HERSHEY_COMPLEX, 0.5,Scalar(255, 255, 255), 1, CV_AA);
-		ss2 <<"Direction:"<<data.getCarObj()->getPath().getDirectionArg()<<" - " <<"Using ipl:"<<data.getCarObj()->isUsingIpl();
-		putText(mapCln, ss2.str(), Point(30, 90), FONT_HERSHEY_COMPLEX, 0.5,Scalar(255, 255, 255), 1, CV_AA);
-		ss3 <<"Car postion on track:"<< data.getCarObj()->getPath().getCarPosState();
-		putText(mapCln, ss3.str(), Point(30, 120), FONT_HERSHEY_COMPLEX, 0.5,Scalar(255, 255, 255), 1, CV_AA);
+		if(data.getCarData()){
+//			ss1 <<"BorderID:"<<data.getCarObj()->getPath().getCurrentBorderId();
+//			ss1 <<" - LaneID:"<<data.getCarObj()->getLaneId();
+//			putText(mapCln, ss1.str(), Point(30, 60), FONT_HERSHEY_COMPLEX, 0.5,Scalar(255, 255, 255), 1, CV_AA);
+//			ss2 <<"Direction:"<<data.getCarObj()->getPath().getDirectionArg()<<" - ";
+//			putText(mapCln, ss2.str(), Point(30, 90), FONT_HERSHEY_COMPLEX, 0.5,Scalar(255, 255, 255), 1, CV_AA);
+//			ss3 <<"Car postion on track:"<< data.getCarObj()->getPath().getCarPathState();
+//			putText(mapCln, ss3.str(), Point(30, 120), FONT_HERSHEY_COMPLEX, 0.5,Scalar(255, 255, 255), 1, CV_AA);
+		}
 		imshow("OUTPUT", mapCln);
-
-		//d++;
 
 		c = waitKey(WAIT_TIME);
 	}
+
+	// stop other sub threads
+	mvoDectectionThread.stopThread();
+	threadManager.stopAllThreads();
+//	showOutputThread.stopThread();
 	onExit();
 }
 

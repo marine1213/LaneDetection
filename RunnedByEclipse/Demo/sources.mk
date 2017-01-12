@@ -25,6 +25,9 @@ C_DEPS :=
 SUBDIRS := \
 src/Controller \
 src/DrawHelper \
+src/ExternalAlgorithm \
+src/System \
+src/ThreadImgProcessing \
 src \
 src/unsused \
 

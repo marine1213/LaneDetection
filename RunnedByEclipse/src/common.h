@@ -31,9 +31,13 @@ using namespace std;
 
 #define CHECK_RELATIVE_PT2IPL		0
 #define CHECK_LANE_LOCATOR			0
-#define CHECK_DISTANCE2STOPLINE		0
+#define CHECK_DISTANCE2STOPLINE		1
 #define CHECK_CENTER_PT				0
 #define SHOW_INPUT					1
 #define	DEBUG						1
+
+#define SHOW_CLASSES_STATE			0
+#define SHOW_RF_STATE				0
+#define SHOW_PROCESSING_STATE		0
 
 #endif //_COMMON_H_
