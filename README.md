@@ -1,6 +1,7 @@
 # LaneDetection with result on intersection 2
 
 Turning with estimating distance and same angle for both case.
+Kalman filter is added to improve accuracy of direction calculation.
 
 Experiment setup condition and result:
 
