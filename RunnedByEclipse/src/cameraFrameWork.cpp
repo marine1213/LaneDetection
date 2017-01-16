@@ -9,6 +9,10 @@
 
 VideoCapture capture;
 
+DIR *dir;
+struct dirent *ent;
+Mat readImage(string imgName);
+
 // Predefined Functions
 void init(int argc, char** args, DataBundle &data){
 #if STATIC_IMAGE

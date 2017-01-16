@@ -17,10 +17,12 @@
 // Variables, structures and classes
 #if STATIC_IMAGE
 #define 	WAIT_TIME			0//2000
-	DIR *dir;
-	struct dirent *ent;
-	Mat readImage(string imgName);
-#elif VIDEO || CAMERA
+
+extern	DIR *dir;
+extern	struct dirent *ent;
+extern  Mat readImage(string imgName);
+#endif
+#if VIDEO || CAMERA
 #define 	WAIT_TIME			1
 	Mat readImage();
 #endif

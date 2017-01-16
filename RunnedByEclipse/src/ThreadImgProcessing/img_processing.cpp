@@ -59,7 +59,7 @@ void setupPPMap(Mat &input,Mat &transformMat, Mat & ppmap){
 
 	transformMat = getPerspectiveTransform(p4i,map_p);
 	ppmap = Mat::zeros(input.size(), CV_8UC3);
-	warpPerspective(input, ppmap, transformMat, Size(MAP_WIDTH, MAP_HEIGHT));
+//	warpPerspective(input, ppmap, transformMat, Size(MAP_WIDTH, MAP_HEIGHT));
 }
 
 void select_points(int event, int x, int y, int flags, void* userdata)
@@ -95,7 +95,7 @@ void laneProcessing(Mat &input, int imgId,DataBundle &data) {
 
 		Mat yellowMask, whiteMask;		// blackMaskHls;
 		inRange(hlsImg, Scalar(10, 0, 100), Scalar(30, 255, 255), yellowMask);
-		inRange(hlsImg, Scalar(0, 200, 0), Scalar(255, 255, 255), whiteMask);
+		inRange(hlsImg, Scalar(0, 190, 0), Scalar(255, 255, 255), whiteMask);
 //		inRange(hlsImg, Scalar(0, 65, 0), Scalar(255, 145, 255), blackMaskHls);  // to get black area
 #if DEBUG
 		imshow("yellow",yellowMask);
@@ -104,11 +104,11 @@ void laneProcessing(Mat &input, int imgId,DataBundle &data) {
 
 		//----------------extract lanes----------------------
 
-		laneDetection(whiteMask, WHITE_LANE, data);
-		laneDetection(yellowMask, YELLOW_LANE, data);
-
-		//---------interpolate centerLine-----------------------
-		data.getIntersection()->interpolateLines(data.getTmpDetectionImg());
+//		laneDetection(whiteMask, WHITE_LANE, data);
+//		laneDetection(yellowMask, YELLOW_LANE, data);
+//
+//		//---------interpolate centerLine-----------------------
+//		data.getIntersection()->interpolateLines(data.getTmpDetectionImg());
 	}
 }
 

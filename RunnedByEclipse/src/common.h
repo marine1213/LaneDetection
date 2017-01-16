@@ -16,13 +16,13 @@ using namespace cv;
 using namespace std;
 
 // Type of input (enable for an input only)
-#define STATIC_IMAGE				0
+#define STATIC_IMAGE				1
 #define VIDEO						0
-#define CAMERA						1
+#define CAMERA						0
 
 // Dataset configurations
 #define VIDEO_FILE					"../../../Dataset/SangilSamples/test.avi"
-#define DATASET_DIR					"../../../Dataset/RealSamples/"
+#define DATASET_DIR					"Dataset/Source1/"
 
 // Image size
 #define COLS						860
